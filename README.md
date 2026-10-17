@@ -1,4 +1,7 @@
 # Academic Advising & Course Prerequisite Engine
+> [!NOTE]
+> 🚧 **Work in Progress:** This project is actively being populated and refactored for production standards. Core endpoints and documentation will be fully available soon.
+
 > A high-performance C++ command-line tool utilizing a custom Binary Search Tree (BST) for sub-linear prerequisite resolution, recursive lifecycle management, and alphanumeric schedule generation.
 
 ---
