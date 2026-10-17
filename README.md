@@ -1,20 +1,67 @@
-# CS-300 Data Structures & Algorithms
-## Project Overview & Problem Statement
-In this course, the primary objective was to design an efficient Advising Assistance Software System for computer science students and academic adficsors. Advisors required a reliable, command-line tool capable of ingesting raw course data from a CSV file, parsing prerequisites, sorting courses alphanumerically, and looking up specific course details instantly.
-To solve this, I evaluated multiple data structures—including vectors, hash tables, and binary search trees—to identify the optimal balance between time complexity and memory efficiency. Ultimately, I implemented a custom Binary Search Tree (BST) in C++ to store, sort, and retrieve course objects seamlessly.
-## Technical Approach & The Importance of Data Structures
-Selecting the right data structure is fundamental to scalable software engineering. While linear structures like vectors are simple, searching or maintaining order requires costly operations—either sorting repeatedly $(O(N log N))$ or linear searching $(O(N))$.
-By choosing a Binary Search Tree:
-- **Efficient Sorting**: An in-order traversal allows the application to print all computer science and math courses alphanumerically in $O(N)$ time without requiring a separate sorting algorithm.
-- **Fast Lookups**: Course lookups and prerequisite verifications execute in average $O(log N)$ time, ensuring the system remains responsive even as the course catalog expands.
-- **Data Organization**: Storing custom Course objects containing dynamic prerequisite vectors allowed for modular, real-world data representation.
-## Overcoming Roadblocks
-During implementation, key challenges centered on robust memory management, input parsing, and handling edge cases:
-- **Memory Management**: To prevent memory leaks inherent with dynamic pointer allocation, I implemented a custom destructor (~BinarySearchTree()) using a post-order traversal (destroyTree) to systematically free nodes from the bottom up.
-- **Input Sanitization & Exception Handling**: User input validations (such as lowercase text or extra spacing) were resolved by building helper functions using standard algorithms (std::remove_if and std::transform) wrapped in try/catch blocks handling std::logic_error.
-- **Recursive Pointer Operations**: Debugging traversal helper functions required careful handling of pointer types and recursive boundary conditions to avoid infinite loops and segfaults.
-## Evolution of Software Design & Program Maintainability
-Working on these projects significantly boradened my perspective on writing maintenance-ready, professional software:
-- **Maintainability & Readability**: Adhering to C++ best practices—such as clear inline documentation, consistent camelCase/PascalCase naming conventions, and modular funcitonal separation—ensures the codebase is readable and easily navigable for collaborators.
-- **Adaptability & Defensive Programming**: Input validation logic, stream error clearing (cin.clear(), cin.ignore()), and pre-load execution guards prevent accidental program crashes when unexpected user input occurs.
-- **Architectural Awareness**: Analyzing performance trade-offs in Project One reinforced the principle that code design begins before writing a single line of logic. Designing for algorithmic efficiency early saves significant refactoring time later.
+# Academic Advising & Course Prerequisite Engine
+> A high-performance C++ command-line tool utilizing a custom Binary Search Tree (BST) for sub-linear prerequisite resolution, recursive lifecycle management, and alphanumeric schedule generation.
+
+---
+
+## Technical Highlights
+* **Algorithmic Efficiency:** Employs a custom Binary Search Tree to deliver $\mathcal{O}(\log n)$ average-case search and insertion times alongside $\mathcal{O}(n)$ in-order sorted traversal.
+* **Explicit Memory Lifecycle:** Implements RAII principles and a recursive post-order destructor (`~BinarySearchTree()`) to systematically eliminate dynamic pointer memory leaks.
+* **Defensive Input Engineering:** Incorporates tokenization sanitation via `std::remove_if`, `std::transform`, stream recovery (`cin.clear()`, `cin.ignore()`), and `std::logic_error` boundary guards.
+
+---
+
+## System Overview & Architecture
+The Advising Assistance Engine is a specialized CLI tool engineered to ingest raw institutional curriculum data, validate complex prerequisite dependency chains, and provide instantaneous course lookups for academic advisors. 
+
+When evaluating architecture candidates (dynamic arrays, separate-chaining hash tables, and search trees), the system required an optimal trade-off between lookup latency and ordered reporting:
+* **Vectors** offered predictable ingestion but forced an $\mathcal{O}(n)$ linear search penalty or an $\mathcal{O}(n \log n)$ sorting tax.
+* **Hash Tables** delivered near-constant lookup time ($\mathcal{O}(1)$ average) but maintained no internal key ordering, requiring auxiliary arrays and additional memory allocations to sort schedules.
+* **Binary Search Tree:** Selected as the primary engine structure, natively supporting both logarithmic course search ($\mathcal{O}(\log n)$) and ordered schedule output ($\mathcal{O}(n)$) without auxiliary sorting overhead.
+
+---
+
+## Core Capabilities
+* **Dynamic Prerequisite Resolution:** Recursively traverses tree nodes to verify and cross-reference course prerequisites against primary course records.
+* **In-Order Schedule Generation:** Streams all enrolled department courses in strict alphanumeric order via left-root-right depth-first traversal.
+* **Pre-load Execution Guards:** State-driven execution flags prevent invalid tree traversal operations if menu queries are attempted prior to dataset ingestion.
+* **Fault-Tolerant String Normalization:** Case-insensitive search parsing automatically formats input (e.g., stripping whitespace, handling mixed case) into standardized catalog identifiers.
+
+---
+
+## Engineering Challenges & Solutions
+
+| Challenge | Technical Bottleneck | Engineered Solution |
+| :--- | :--- | :--- |
+| **Pointer Leakage** | Dynamic heap allocation per tree node risk leaving orphaned memory on application teardown. | Engineered a bottom-up post-order cleanup helper (`destroyTree`) triggered automatically by the class destructor. |
+| **Input Ingestion Faults** | CSV files presenting missing titles, irregular commas, or extraneous spaces could corrupt tokens. | Implemented token-length verification along with standard algorithm transforms (`remove_if`, `isspace`, `toupper`) protected by targeted `try/catch` handlers. |
+| **CLI Stream Desynchronization** | Non-numeric input types in menu selection induce stream failure flags, triggering infinite display loops. | Integrated automated stream state validation using `cin.fail()`, resetting stream flags with `cin.clear()`, and flushing the buffer via `cin.ignore()`. |
+
+---
+
+## Quickstart & Execution
+
+### Prerequisites
+* C++17 compatible compiler (`g++`, `clang++`, or MSVC)
+* Standard C++ runtime library
+
+### Build & Run
+```bash
+# Clone the repository
+git clone [https://github.com/](https://github.com/)<your-username>/academic-course-planner.git
+cd academic-course-planner
+
+# Compile using C++17 optimization
+g++ -std=c++17 -O2 project2.cpp -o course_planner
+
+# Launch the CLI application
+./course_planner
+```
+
+### Dataset Format
+The ingestion engine parses comma-delimited flat files structured with course keys, course titles, and zero to three prerequisites:
+```text
+CS100,Introduction to Computer Science
+CS200,Data Structures,CS100
+CS300,Advanced Algorithms,CS200,MATH201
+```
+
